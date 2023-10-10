@@ -1,0 +1,101 @@
+﻿
+@model List<TestMVCGrid.Models.InventoryModel>
+     
+<html>
+<head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.cdnjs.com/ajax/libs/json2/20110223/json2.js"></script>
+    <script type="text/javascript">
+
+        window.onload = function () {
+            var add = 0;
+            var table = document.getElementById("itemBody").getElementsByTagName("tr");
+            for (var i = 0; i < table.length; i++) {
+                add = parseInt(add) + parseInt(table[i].cells[3].innerHTML);
+            }
+            document.getElementById("lblGrossTotal").innerText = add;
+        }
+                            
+
+        function save() {
+            if (document.getElementById("txtName").value == "") {
+                alert("Please enter Item");
+                document.getElementById("txtName").focus();
+                return;
+            }
+            if (document.getElementById("txtQuantity").value == "") {
+                alert("Please enter Quantity");
+                document.getElementById("txtQuantity").focus();
+                return;
+            }
+            if (document.getElementById("txtPrice").value == "") {
+                alert("Please enter price");
+                document.getElementById("txtPrice").focus();
+                return;
+            }
+
+            var inventory = {};
+            inventory.item = document.getElementById("txtName").value;
+            inventory.quantity = document.getElementById("txtQuantity").value;
+            inventory.Price = document.getElementById("txtPrice").value;
+           
+            $.ajax({
+                type: "POST",
+                url: "/Inventory/Insert",
+                data: JSON.stringify(inventory),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function (r) {
+                    alert(" record(s) inserted.");
+                    location.reload();
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <form>      
+        <table cellpadding="1" cellspacing="1" border="0">          
+            <thead style="background-color:blue;color:white;font:200;">
+                <tr>
+                    <th style="width:150px">Item</th>
+                    <th style="width:150px">Quantity</th>
+                    <th style="width:150px">Price</th>
+                    <th style="width:150px">SubTotal</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody id="itemBody">
+
+                @foreach (TestMVCGrid.Models.InventoryModel inventory in Model)
+                {                   
+                    <tr>
+                        <td>@inventory.item</td>
+                        <td>@inventory.quantity</td>
+                        <td>@inventory.price</td>
+                        <td>@inventory.subtotal</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td><input type="text" id="txtName" /></td>
+                    <td><input type="number" id="txtQuantity"  /></td>
+                    <td><input type="number" id="txtPrice" /></td>
+
+                </tr>
+                <tr>
+                    <td><input type="button" id="btnSave" value="Save" onclick="save()" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>Gross Total</td>
+                    <td> <label title="" id="lblGrossTotal"></label></td>
+                </tr>
+            </tfoot>
+        </table>
+    </form>
+</body>
+</html>
+
